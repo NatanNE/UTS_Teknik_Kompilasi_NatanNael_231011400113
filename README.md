@@ -1,2 +1,51 @@
 # UTS_Teknik_Kompilasi_NatanNael_231011400113
 Jawaban Pertanyaan Refleksi
+
+
+Bagian ini mendefinisikan struktur data pohon untuk representasi kode.
+
+class AST:
+    pass
+
+class BinOp(AST):
+    def __init__(self, left, op, right):
+        self.left = left
+        self.op = op
+        self.right = right
+
+class Num(AST):
+    def __init__(self, value):
+        self.value = value
+
+class Var(AST):
+    def __init__(self, name):
+        self.name = name
+
+class ParserError(Exception):
+    pass
+
+Untuk menambahkan dukungan operator pangkat (^) dengan prioritas lebih tinggi daripada * dan /,  perlu menambahkan level parsing baru di antara factor dan term.
+
+Struktur prioritas yang benar:
+
+^ → paling tinggi
+* dan /
++ dan -
+
+Selain itu, operator pangkat biasanya right-associative:
+
+2 ^ 3 ^ 2
+= 2 ^ (3 ^ 2)
+= 2 ^ 9
+= 512
+
+
+implementasi parser yang umum digunakan.
+
+Grammar Baru
+expr    : term ((PLUS | MINUS) term)*
+term    : power ((MUL | DIV) power)*
+power   : factor (POW power)?
+factor  : NUMBER
+        | VARIABLE
+        | LPAREN expr RPAREN
