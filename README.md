@@ -1,51 +1,26 @@
 # UTS_Teknik_Kompilasi_NatanNael_231011400113
 Jawaban Pertanyaan Refleksi
+Nama : Natan Nael
+NIM : 231011400113
+Kelas : 06TPLE003
+Mata Kuliah : Teknik Kompilasi
 
 
-Bagian ini mendefinisikan struktur data pohon untuk representasi kode.
+1. Mengapa fungsi power() harus dipanggil di dalam term(), bukan sebaliknya? Jelaskan kaitannya dengan Operator Precedence.
+    Dalam Recursive Descent Parser, fungsi yang menangani operator dengan prioritas lebih rendah (misal term untuk *) harus memanggil fungsi untuk operator dengan prioritas lebih tinggi (misal power untuk ^). 
+    Ini memastikan bahwa operator pangkat dievaluasi lebih "dalam" pada pohon sintaks (AST), sehingga dihitung lebih awal.
+    Hal ini berkaitan dengan Operator Precedence (Prioritas Operator). Dalam teknik Recursive Descent Parsing, fungsi yang menangani operator dengan prioritas lebih rendah memanggil fungsi dengan prioritas lebih tinggi.
+    expr() (tambah/kurang) memanggil term().
+    term() (kali/bagi) memanggil power().
+    power() (pangkat) memanggil factor().
+    Dengan struktur ini, operasi pangkat akan berada di level terbawah (daun) pada AST, sehingga saat proses eksekusi atau pembuatan kode, operasi pangkat akan diselesaikan terlebih dahulu sebelum hasilnya digunakan oleh operasi perkalian atau penjumlahan.
 
-class AST:
-    pass
+2. Apa yang terjadi pada fase Analisis Semantik jika variabel z digunakan dalam kode sumber tetapi tidak ada di symbol_table?
+    Program akan menghasilkan sebuah kesalahan semantik (Semantic Error). Dalam implementasi di atas (pada fungsi factor), terdapat pengecekan if token not in self._env. 
+    Jika variabel z tidak ditemukan dalam symbol_table, program akan melemparkan ParserError dengan pesan "Semantic Error: Undefined variable 'z'". Ini mencegah kompilator mencoba memproses variabel yang nilainya atau keberadaannya tidak diketahui.
 
-class BinOp(AST):
-    def __init__(self, left, op, right):
-        self.left = left
-        self.op = op
-        self.right = right
-
-class Num(AST):
-    def __init__(self, value):
-        self.value = value
-
-class Var(AST):
-    def __init__(self, name):
-        self.name = name
-
-class ParserError(Exception):
-    pass
-
-Untuk menambahkan dukungan operator pangkat (^) dengan prioritas lebih tinggi daripada * dan /,  perlu menambahkan level parsing baru di antara factor dan term.
-
-Struktur prioritas yang benar:
-
-^ → paling tinggi
-* dan /
-+ dan -
-
-Selain itu, operator pangkat biasanya right-associative:
-
-2 ^ 3 ^ 2
-= 2 ^ (3 ^ 2)
-= 2 ^ 9
-= 512
-
-
-implementasi parser yang umum digunakan.
-
-Grammar Baru
-expr    : term ((PLUS | MINUS) term)*
-term    : power ((MUL | DIV) power)*
-power   : factor (POW power)?
-factor  : NUMBER
-        | VARIABLE
-        | LPAREN expr RPAREN
+3. Jelaskan mengapa dalam TAC, instruksi untuk a ^ 2 harus muncul sebelum instruksi untuk +.
+    TAC (Three Address Code) dihasilkan melalui penelusuran pohon AST secara post-order traversal (kiri, kanan, akar). 
+    Karena operator ^ memiliki prioritas lebih tinggi daripada +, maka node ^ menjadi anak (subtree) dari node +. 
+    Dalam aturan matematika dan logika komputasi, nilai dari operan harus tersedia sebelum operator dijalankan. 
+    Karena + membutuhkan hasil dari a ^ 2, maka langkah perhitungan a ^ 2 harus dieksekusi dan disimpan dalam variabel sementara (misal: t1) terlebih dahulu agar hasilnya bisa dijumlahkan kemudian.
