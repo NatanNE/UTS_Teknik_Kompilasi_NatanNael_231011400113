@@ -1,0 +1,20 @@
+Jawaban Pertanyaan Refleksi
+Nama : Natan Nael
+NIM : 231011400113
+Kelas : 06TPLE003
+Mata Kuliah : Teknik Kompilasi
+
+
+1. Mengapa fungsi power() harus dipanggil di dalam term(), bukan sebaliknya? Jelaskan kaitannya dengan Operator Precedence.
+    Dalam Recursive Descent Parser, fungsi yang menangani operator dengan prioritas lebih rendah (misal term untuk *) harus memanggil fungsi untuk operator dengan prioritas lebih tinggi (misal power untuk ^). Ini memastikan bahwa operator pangkat dievaluasi lebih "dalam" pada pohon sintaks (AST), sehingga dihitung lebih awal.
+    Hal ini berkaitan dengan Operator Precedence (Prioritas Operator). Dalam teknik Recursive Descent Parsing, fungsi yang menangani operator dengan prioritas lebih rendah memanggil fungsi dengan prioritas lebih tinggi.
+expr() (tambah/kurang) memanggil term().
+term() (kali/bagi) memanggil power().
+power() (pangkat) memanggil factor().
+Dengan struktur ini, operasi pangkat akan berada di level terbawah (daun) pada AST, sehingga saat proses eksekusi atau pembuatan kode, operasi pangkat akan diselesaikan terlebih dahulu sebelum hasilnya digunakan oleh operasi perkalian atau penjumlahan.
+
+2. Apa yang terjadi pada fase Analisis Semantik jika variabel z digunakan dalam kode sumber tetapi tidak ada di symbol_table?
+    Program akan menghasilkan sebuah kesalahan semantik (Semantic Error). Dalam implementasi di atas (pada fungsi factor), terdapat pengecekan if token not in self._env. Jika variabel z tidak ditemukan dalam symbol_table, program akan melemparkan ParserError dengan pesan "Semantic Error: Undefined variable 'z'". Ini mencegah kompilator mencoba memproses variabel yang nilainya atau keberadaannya tidak diketahui.
+
+3. Jelaskan mengapa dalam TAC, instruksi untuk a ^ 2 harus muncul sebelum instruksi untuk +.
+    TAC (Three Address Code) dihasilkan melalui penelusuran pohon AST secara post-order traversal (kiri, kanan, akar). Karena operator ^ memiliki prioritas lebih tinggi daripada +, maka node ^ menjadi anak (subtree) dari node +. Dalam aturan matematika dan logika komputasi, nilai dari operan harus tersedia sebelum operator dijalankan. Karena + membutuhkan hasil dari a ^ 2, maka langkah perhitungan a ^ 2 harus dieksekusi dan disimpan dalam variabel sementara (misal: t1) terlebih dahulu agar hasilnya bisa dijumlahkan kemudian.
